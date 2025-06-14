@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useMemo } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import Particles from "react-tsparticles";
 import { loadSlim } from "tsparticles-slim";
@@ -130,9 +131,12 @@ export default function Home() {
           <p className="text-lg md:text-xl text-gray-400 mb-8 max-w-xl">
             ビジネスとアカデミックをつなぐ、次世代のプラットフォーム。
           </p>
-          <button className="bg-white text-black font-semibold px-6 py-3 rounded-xl shadow-md hover:bg-gray-200 transition">
+          <Link
+            href="/login"
+            className="bg-white text-black font-semibold px-6 py-3 rounded-xl shadow-md hover:bg-gray-200 transition"
+          >
             プラットフォームを見る
-          </button>
+          </Link>
         </section>
 
         {/* Catchcopy Sections */}
