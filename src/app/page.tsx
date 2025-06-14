@@ -1,103 +1,204 @@
-import Image from "next/image";
+'use client';
+
+import { useEffect, useState, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import Particles from "react-tsparticles";
+import { loadSlim } from "tsparticles-slim";
+
+const messages = [
+  "研究に、ビジネスの風を。",
+  "研究は投資先。未来の事業を先取りする。"
+];
+
+// Header Component
+function Header() {
+  return (
+    <header className="fixed top-0 left-0 w-full z-50 bg-black bg-opacity-80 backdrop-blur border-b border-gray-800">
+      <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+        <a href="#" className="text-xl font-bold text-white hover:text-gray-300 transition">BtoA</a>
+        <nav className="space-x-6 text-sm text-gray-300 hidden md:block">
+          <a href="#features" className="hover:text-white">機能紹介</a>
+          <a href="#contact" className="hover:text-white">お問い合わせ</a>
+        </nav>
+      </div>
+    </header>
+  );
+}
+
+// Footer Component
+function Footer() {
+  return (
+    <footer className="bg-gray-900 text-gray-400 py-12 text-center text-sm">
+      <p>© {new Date().getFullYear()} BtoA. All rights reserved.</p>
+    </footer>
+  );
+}
+
+function AnimatedText({ text }: { text: string }) {
+  return (
+    <span className="inline-block">
+      {text.split("").map((char, index) => (
+        <motion.span
+          key={index}
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ delay: index * 0.05 }}
+          className="inline-block"
+        >
+          {char}
+        </motion.span>
+      ))}
+    </span>
+  );
+}
+
+function BackgroundParticles() {
+  const particlesInit = async (engine: any) => {
+    await loadSlim(engine);
+  };
+
+  return useMemo(
+    () => (
+      <Particles
+        id="tsparticles"
+        className="absolute inset-0 z-0"
+        init={particlesInit}
+        options={{
+          fullScreen: { enable: false },
+          background: { color: "#000000" },
+          particles: {
+            color: { value: "#ffffff" },
+            links: { enable: true, color: "#ffffff", distance: 150 },
+            move: {
+              enable: true,
+              speed: 1,
+              direction: "none",
+              outModes: { default: "out" },
+            },
+            number: { value: 300 },
+            opacity: { value: 0.3 },
+            shape: { type: "circle" },
+            size: { value: 2 },
+          },
+          detectRetina: true,
+          interactivity: {
+            events: {
+              onHover: { enable: true, mode: "repulse" },
+              resize: true
+            },
+            modes: {
+              repulse: { distance: 100, duration: 0.4 }
+            }
+          }
+        }}
+      />
+    ),
+    []
+  );
+}
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [flipped, setFlipped] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFlipped((prev) => !prev);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <>
+      <Header />
+      <main className="bg-black text-white pt-20 relative overflow-hidden">
+        <BackgroundParticles />
+
+        <section className="relative z-10 flex flex-col items-center justify-center h-screen px-6 text-center">
+          <div className="text-4xl md:text-6xl font-bold mb-6" style={{ perspective: 1000 }}>
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={flipped ? "academic" : "simple"}
+                initial={{ rotateX: 90, opacity: 0 }}
+                animate={{ rotateX: 0, opacity: 1 }}
+                exit={{ rotateX: -90, opacity: 0 }}
+                transition={{ duration: 0.6 }}
+              >
+                {flipped ? "Academic to Business" : "A to B"}
+              </motion.span>
+            </AnimatePresence>
+          </div>
+          <p className="text-lg md:text-xl text-gray-400 mb-8 max-w-xl">
+            ビジネスとアカデミックをつなぐ、次世代のプラットフォーム。
+          </p>
+          <button className="bg-white text-black font-semibold px-6 py-3 rounded-xl shadow-md hover:bg-gray-200 transition">
+            プラットフォームを見る
+          </button>
+        </section>
+
+        {/* Catchcopy Sections */}
+        {messages.map((text, index) => (
+          <section
+            key={index}
+            className="relative z-10 flex items-center justify-center min-h-screen px-6 overflow-hidden"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+            <motion.h2
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true, amount: 0.5 }}
+              className="text-3xl md:text-6xl font-semibold text-center max-w-7xl leading-tight whitespace-nowrap"
+            >
+              <AnimatedText text={text} />
+            </motion.h2>
+          </section>
+        ))}
+
+        {/* Features Section */}
+        <section id="features" className="relative z-10 flex flex-col items-center justify-center min-h-screen bg-black text-white px-6 text-center">
+          <h2 className="text-3xl md:text-5xl font-bold mb-6">BtoAでできること</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl">
+            <div className="bg-gray-800 p-6 rounded-xl shadow">
+              <h3 className="text-xl font-semibold mb-2">🎓 研究室データベース</h3>
+              <p className="text-gray-300">信頼できる研究室情報を一元化し、研究内容や連携実績を把握できます。</p>
+            </div>
+            <div className="bg-gray-800 p-6 rounded-xl shadow">
+              <h3 className="text-xl font-semibold mb-2">🤝 マッチング機能</h3>
+              <p className="text-gray-300">学生・研究室・企業をつなぐマッチングで、最適な出会いを実現します。</p>
+            </div>
+            <div className="bg-gray-800 p-6 rounded-xl shadow">
+              <h3 className="text-xl font-semibold mb-2">🧑‍💼 就活支援オファー</h3>
+              <p className="text-gray-300">企業と学生が双方向でオファーを送り合う、パーソナルな就活支援機能。</p>
+            </div>
+          </div>
+        </section>
+
+        {/* Contact Section */}
+        <section id="contact" className="relative z-10 flex flex-col items-center justify-center min-h-screen bg-gray-100 text-black px-6 text-center">
+          <h2 className="text-3xl md:text-5xl font-bold mb-6">お問い合わせ</h2>
+          <p className="text-md text-gray-700 mb-8 max-w-xl">
+            企業連携・サービス利用に関するご質問やご相談はこちらから。
+          </p>
+          <form className="w-full max-w-md space-y-4">
+            <input
+              type="email"
+              placeholder="メールアドレス"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
+            <textarea
+              placeholder="お問い合わせ内容"
+              rows="4"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+            ></textarea>
+            <button
+              type="submit"
+              className="w-full bg-black text-white py-2 rounded-lg hover:bg-gray-800 transition"
+            >
+              送信する
+            </button>
+          </form>
+        </section>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      <Footer />
+    </>
   );
 }
